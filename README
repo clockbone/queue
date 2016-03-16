@@ -1,0 +1,14 @@
+1、如何用mybatis-generator-maven-plugin插件自动根据表名生成domain、dao、xml文件
+   新建generatorConfig.xml文件
+   风容参考：
+   http://www.mybatis.org/generator/quickstart.html
+   http://www.mybatis.org/generator/configreference/xmlconfig.html
+   可cd到工程目录下再执行,执行下列命令(这里还需要下载mybatis-generator-core jar包)：
+   java -jar E:\repository\org\mybatis\generator\mybatis-generator-core\1.3.2\mybatis-generator-core-1.3.2.jar -configfile src\main\resources\generatorConfig.xml -overwrite
+   可根据实际情况自定义文件路径
+2、打包
+   默认打包是filter下的local.properties配置文件，命令：mvn package
+   可根据不同环境打包不同的配置文件，如打包测试环境命令为：mvn package -Ptest
+   若还有测试类mvn插件,跳过测试类命令为：mvn clean package -Dmaven.test.skip=true -U -Ptest
+
+

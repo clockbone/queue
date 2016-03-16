@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+
+    <!-- 1  oracle queue database-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${queue.db.driverClass}"></property>
+        <property name="jdbcUrl"
+                  value="${queue.db.url}"></property>
+        <property name="user" value="${queue.db.user}"></property>
+        <property name="password" value="${queue.db.password}"></property>
+        <!--c3p0 -->
+        <property name="initialPoolSize" value="2" />
+        <!-- 初始化时创建的连接数 Default: 3 -->
+        <property name="minPoolSize" value="2" />
+        <!--连接池中保留的最小连接数。Default: 3 -->
+        <property name="maxPoolSize" value="4" />
+        <!--连接池中保留的最大连接数。Default: 15 -->
+        <property name="maxIdleTime" value="600" />
+        <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+        <property name="acquireIncrement" value="2" />
+        <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+        <property name="acquireRetryAttempts" value="30" />
+        <!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+        <property name="acquireRetryDelay" value="100"/>
+        <!-- 每100ms尝试一次 -->
+        <property name="breakAfterAcquireFailure" value="false" />
+        <!--true那么在尝试获取连接失败后该数据源将申明已断开并永久关闭 ,false，获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常
+            但是数据源仍有效保留，并在下次调用getConnection()的时候继续尝试获取连接。 -->
+        <property name="maxStatements" value="0" />
+        <!-- 如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。100 Default:
+            0 -->
+        <property name="maxStatementsPerConnection" value="5" />
+        <!-- 单个连接所拥有的最大缓存statements数 -->
+        <property name="testConnectionOnCheckout" value="false" />
+        <!-- 如果设为true那么在每个connection提交的时候都 将校验其有效性 -->
+        <property name="testConnectionOnCheckin" value="false" />
+        <!-- 取得连接的同时将校验连接的有效性 -->
+        <property name="idleConnectionTestPeriod" value="500" />
+        <!--每60秒检查所有连接池中的空闲连接。Default: 0 -->
+        <property name="numHelperThreads" value="5" />
+    </bean>
+
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.clockbone.model" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.clockbone.mapper" />
+    </bean>
+
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+        <qualifier value="queue" />
+    </bean>
+
+    <!-- 全注解方式   需加上@Transactional -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+
+
+
+</beans>
