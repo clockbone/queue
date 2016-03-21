@@ -52,6 +52,7 @@ public class Bootstrap extends AbstractIdleService {
 
         //ExecutorService executorService = ThreadPoolExecutor
         //程池	ExecutorService executorService = Executors.newCachedThreadPool();
+        //启动4个消费者
         for(int i=0;i<4;i++){
             QueueCustomer queueCustomer = new QueueCustomer(queueStorage,1000);
             queueCustomer.doShutdownHook(queueCustomer);

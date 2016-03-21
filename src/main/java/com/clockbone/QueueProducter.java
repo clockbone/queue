@@ -71,6 +71,18 @@ public class QueueProducter extends Thread {
 
     }
 
+    /*
+    *
+    *  public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(new ThreadTesterA());
+        Thread t2 = new Thread(new ThreadTesterB());
+        t1.start();
+        t1.join(); // wait t1 to be finished
+        t2.start();
+        t2.join(); // in this program, this may be removed
+    }
+    * */
+
     public void doShutdownHook(final QueueProducter wr){
         Runtime.getRuntime().addShutdownHook(new Thread(){
 
@@ -82,7 +94,8 @@ public class QueueProducter extends Thread {
 
                 while(attempCount>0&&wr.isAlive()){
                     try {
-                        wr.join();
+                        wr.join();// 前面判断wr.siAlive是否存活，如何存活，调用wr.join 即是等wr运行完，在执行run()方法后面的方法（重试三次）
+                        //避免手动停止项目时，即停止jvm时 而线程的run方法还没执行完。影响业务
                     } catch (InterruptedException e) {
                     }
                     attempCount--;
