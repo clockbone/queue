@@ -89,13 +89,14 @@ public class QueueProducter extends Thread {
             @Override
             public void run() {
                 System.out.println("is out...");
+                //在jvm停止前RUN=FALSE，停止run方法while循环的执行
                 RUN=false;
                 int attempCount=3;
 
                 while(attempCount>0&&wr.isAlive()){
                     try {
-                        wr.join();// 前面判断wr.siAlive是否存活，如何存活，调用wr.join 即是等wr运行完，在执行run()方法后面的方法（重试三次）
-                        //避免手动停止项目时，即停止jvm时 而线程的run方法还没执行完。影响业务
+                        wr.join();// 前面判断wr.siAlive是否存活，如何存活，调用wr.join 即是等wr运行完，在执行run()方法后面的方法，保证方法都执行完（重试三次）
+                        //避免手动停止项目时，即停止jvm时 而线程的run方法后的方法还没执行完。影响业务
                     } catch (InterruptedException e) {
                     }
                     attempCount--;

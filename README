@@ -14,7 +14,8 @@
 
 3、queueCustomer.doShutdownHook(queueCustomer);
    a、Runtime.getRuntime().addShutdownHook(new Thread())//在jvm停止运行前执行的方法
-   b、在jvm停止前可以调用线程的join方法 ，即是:等线程的run方法执行完，再停止，避免业务中断
+   b、在jvm停止前可以调用线程的join方法 ，即是:等线程的run后方法执行完，再停止，避免业务中断
    c、当手动停止项目时，会停止jvm。这时就需要考虑以上情况，即调用Runtime.getRuntime().addShutdownHook(new Thread())方法
-      在run方法中调用线程的join方法，在jvm停止前 让线程的run方法执行完。。
+      在run方法RUN=FALSE停止while循环
+      在run方法中调用线程的join方法，在jvm停止前 让线程的run方法后的方法也执行完。。
 
